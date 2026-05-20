@@ -341,7 +341,7 @@ bin/kafka-console-consumer.sh \
 --from-beginning
 ```
 
-# Documentation
+# Installation Documentation
 
 ```sh
 # ============================================================================
@@ -462,3 +462,77 @@ bin/kafka-server-start.sh config/server.properties
 # - Metadata is persisted internally, removing need for ZooKeeper.
 # - Fast failover: if controller fails, another broker takes over quickly.
 ```
+
+# Clean kafka
+
+```bash
+# ==============================
+# STOP KAFKA
+# ==============================
+
+pkill -f kafka.Kafka
+pkill -f kafka-server-start
+
+# ==============================
+# REMOVE KAFKA INSTALLATION
+# ==============================
+
+sudo rm -rf /usr/local/kafka_2.13-4.2.0
+
+# if symlink exists
+sudo rm -rf /usr/local/kafka
+
+# ==============================
+# REMOVE KAFKA LOG DATA
+# ==============================
+
+sudo rm -rf /var/lib/kafka-logs
+
+# old tmp logs (if previously used)
+sudo rm -rf /tmp/kraft-combined-logs
+
+# ==============================
+# REMOVE LOCAL LOG FILES
+# ==============================
+
+rm -f ~/kafka.log
+rm -f ~/nohup.out
+
+# ==============================
+# REMOVE ENV VARIABLES
+# ==============================
+
+sed -i '/KAFKA_HOME/d' ~/.bashrc
+sed -i '/kafka_2.13-4.2.0\/bin/d' ~/.bashrc
+
+source ~/.bashrc
+
+# ==============================
+# VERIFY CLEANUP
+# ==============================
+
+echo "==== CHECK ===="
+
+which kafka-server-start.sh
+ls -la /usr/local | grep kafka
+ls -la /var/lib | grep kafka
+
+echo "Kafka cleanup completed."
+```
+
+# Security in kafka (SASL SECURITY)
+
+**THIS LEARN:**
+
+- Next Kafka security topics:
+  - ACLs
+  - TLS
+  - SASL SCRAM
+  - Topic permissions
+  - Producer quotas
+  - Schema registry
+  - Secret management
+  - mTLS
+
+## Since you now want username/password authentication, remove the old PLAINTEXT block completely for SASL
+
