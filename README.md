@@ -74,8 +74,6 @@ sudo chown -R kafka:kafka /var/lib/kafka-logs
 
 # Final Kafka Production-Style Configuration
 
-File:
-
 ```bash
 config/server.properties
 ```
@@ -253,17 +251,6 @@ watch -n 2 free -h
 
 ```
 
-# Kafka UI (BEST)
-
-```bash
-docker run -d \
---name kafka-ui \
--p 8080:8080 \
--e KAFKA_CLUSTERS_0_NAME=local \
--e KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=192.168.29.13:9092 \
-provectuslabs/kafka-ui
-```
-
 # Use of terms
 
 ## 📌 WHY THESE SETTINGS MATTER
@@ -341,185 +328,6 @@ bin/kafka-console-consumer.sh \
 --from-beginning
 ```
 
-# Installation Documentation
-
-```sh
-# ============================================================================
-# Kafka 4.0.0 Setup Script (KRaft Mode - No ZooKeeper)
-# ============================================================================
-# This script includes full documentation, setup instructions, and a working
-# configuration for running Apache Kafka 4.0.0 in KRaft mode.
-# It explains control flow, UUID usage, restart instructions, and includes
-# producer/consumer command examples.
-# ============================================================================
-
-# ---------------------------------------------
-# 📌 Kafka Without ZooKeeper: The Transition to KRaft
-# ---------------------------------------------
-# In this script and documentation:
-# - Overview of ZooKeeper removal
-# - KRaft architecture
-# - Comparison with old system
-# - Step-by-step setup
-# - Explanation of how Kafka works internally
-# - Restart instructions, UUID role
-# - Producer/Consumer usage
-
-# ----------------------------------------------------------------------------
-# 🛠 Why Did Kafka Remove ZooKeeper?
-# ----------------------------------------------------------------------------
-# - ZooKeeper was a separate coordination system used for metadata & leader election.
-# - Problems with ZooKeeper:
-#   1. External dependency
-#   2. Slow leader elections
-#   3. Poor scalability with large clusters
-#   4. Operational overhead
-#
-# KRaft (Kafka Raft) replaces ZooKeeper with an internal Raft-based consensus protocol.
-# Benefits of KRaft:
-# ✅ Simpler deployment
-# ✅ Faster leader election (milliseconds)
-# ✅ Higher scalability
-# ✅ Lower maintenance
-
-# ----------------------------------------------------------------------------
-# 🏗 Kafka’s Old vs. New Architecture
-# ----------------------------------------------------------------------------
-# OLD (ZooKeeper):
-# - Metadata stored externally
-# - Slower failover, more latency
-#
-# NEW (KRaft):
-# - Kafka brokers manage metadata internally
-# - Uses Raft log for consensus
-# - Brokers are both data handlers and metadata controllers
-
-# ----------------------------------------------------------------------------
-# ⚖️ ZooKeeper vs KRaft Comparison
-# ----------------------------------------------------------------------------
-# | Feature               | ZooKeeper        | KRaft            |
-# |----------------------|------------------|------------------|
-# | Metadata Management  | External (ZK)     | Internal (Kafka) |
-# | Leader Election      | Seconds           | Milliseconds     |
-# | Scalability          | Limited           | High             |
-# | Setup Complexity     | High              | Low              |
-# | Failure Recovery     | Slower            | Faster           |
-```
-
-## STEP 1: Download & Build Kafka 4.0.0
-
-```sh
-wget https://www.apache.org/dyn/closer.lua/kafka/4.2.0/kafka_2.13-4.2.0.tgz
-
-tar -xvzf kafka_2.13-4.2.0.tgz
-cd kafka_2.13-4.2.0
-
-```
-
-## STEP 2: Configure Environment Variables
-
-```bash
-sudo nano ~/.bashrc
-```
-
-```bash
-export KAFKA_HOME=/usr/local/kafka_2.13-4.2.0
-export PATH=$PATH:$KAFKA_HOME/bin
-```
-
-**Apply:**
-
-```bash
-source ~/.bashrc
-
-# Then verify:
-echo $KAFKA_HOME
-
-```
-
-## STEP 3: Update config
-
-```bash
-sudo nano /usr/local/kafka_2.13-4.2.0/config/server.properties
-```
-
-> Add config that given above line (84 to 139)
-
-## STEP 4: Generate Cluster UUID & Format Storage
-
-```bash
-echo "Generating Cluster UUID..."
-CLUSTER_ID=$(bin/kafka-storage.sh random-uuid)
-echo "Generated Cluster ID: $CLUSTER_ID"
-bin/kafka-storage.sh format -t $CLUSTER_ID -c config/server.properties
-bin/kafka-server-start.sh config/server.properties
-# 🔁 AFTER REBOOT / SYSTEM RESTART
-# ✅ You do NOT need to generate UUID again.
-# ✅ You do NOT need to format again.
-# - Kafka Broker now also acts as the metadata controller.
-# - Uses Raft consensus to elect a controller among quorum voters.
-# - Topics are created and stored in replicated logs.
-# - Metadata is persisted internally, removing need for ZooKeeper.
-# - Fast failover: if controller fails, another broker takes over quickly.
-```
-
-# Clean kafka
-
-```bash
-# ==============================
-# STOP KAFKA
-# ==============================
-
-pkill -f kafka.Kafka
-pkill -f kafka-server-start
-
-# ==============================
-# REMOVE KAFKA INSTALLATION
-# ==============================
-
-sudo rm -rf /usr/local/kafka_2.13-4.2.0
-
-# if symlink exists
-sudo rm -rf /usr/local/kafka
-
-# ==============================
-# REMOVE KAFKA LOG DATA
-# ==============================
-
-sudo rm -rf /var/lib/kafka-logs
-
-# old tmp logs (if previously used)
-sudo rm -rf /tmp/kraft-combined-logs
-
-# ==============================
-# REMOVE LOCAL LOG FILES
-# ==============================
-
-rm -f ~/kafka.log
-rm -f ~/nohup.out
-
-# ==============================
-# REMOVE ENV VARIABLES
-# ==============================
-
-sed -i '/KAFKA_HOME/d' ~/.bashrc
-sed -i '/kafka_2.13-4.2.0\/bin/d' ~/.bashrc
-
-source ~/.bashrc
-
-# ==============================
-# VERIFY CLEANUP
-# ==============================
-
-echo "==== CHECK ===="
-
-which kafka-server-start.sh
-ls -la /usr/local | grep kafka
-ls -la /var/lib | grep kafka
-
-echo "Kafka cleanup completed."
-```
-
 # Security in kafka (SASL SECURITY)
 
 **THIS LEARN:**
@@ -536,3 +344,218 @@ echo "Kafka cleanup completed."
 
 ## Since you now want username/password authentication, remove the old PLAINTEXT block completely for SASL
 
+```bash
+config/server.properties
+```
+
+```sh
+##############################################
+########### KAFKA KRaft CONFIG ###############
+##############################################
+
+process.roles=broker,controller
+node.id=1
+
+controller.quorum.voters=1@192.168.29.13:9093
+
+##############################################
+# LISTENERS
+##############################################
+
+listeners=SASL_PLAINTEXT://192.168.29.13:9092,CONTROLLER://192.168.29.13:9093
+
+advertised.listeners=SASL_PLAINTEXT://192.168.29.13:9092
+
+inter.broker.listener.name=SASL_PLAINTEXT
+
+controller.listener.names=CONTROLLER
+
+listener.security.protocol.map=CONTROLLER:PLAINTEXT,SASL_PLAINTEXT:SASL_PLAINTEXT
+
+##############################################
+# SASL AUTH
+##############################################
+
+sasl.enabled.mechanisms=PLAIN
+
+sasl.mechanism.inter.broker.protocol=PLAIN
+
+security.inter.broker.protocol=SASL_PLAINTEXT
+
+sasl.mechanism.controller.protocol=PLAIN
+
+listener.name.sasl_plaintext.plain.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \
+username="spade" \
+password="Vikas@123" \
+user_spade="Vikas@123";
+
+##############################################
+# STORAGE
+##############################################
+
+log.dirs=/var/lib/kafka-logs
+
+num.partitions=3
+
+num.recovery.threads.per.data.dir=2
+
+##############################################
+# INTERNAL TOPICS
+##############################################
+
+offsets.topic.replication.factor=1
+
+transaction.state.log.replication.factor=1
+
+transaction.state.log.min.isr=1
+
+##############################################
+# RETENTION
+##############################################
+
+log.retention.hours=3
+
+log.segment.bytes=268435456
+
+log.retention.check.interval.ms=300000
+
+##############################################
+# SAFETY
+##############################################
+
+auto.create.topics.enable=false
+
+log.flush.interval.ms=5000
+
+log.flush.interval.messages=10000
+```
+
+## Create
+
+```bash
+sudo nano /usr/local/kafka-4.1.0-src/client.properties
+```
+
+```bash
+security.protocol=SASL_PLAINTEXT
+
+sasl.mechanism=PLAIN
+
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \
+username="spade" \
+password="Vikas@123";
+```
+
+> WHAT EACH SECURITY LINE MEANS
+
+```table
+| Config                        | Meaning                            |
+| ----------------------------- | ---------------------------------- |
+| `SASL_PLAINTEXT`              | username/password auth             |
+| `PLAIN`                       | simple username/password mechanism |
+| `listener.name...jaas.config` | defines allowed users              |
+| `user_spade="Vikas@123"`      | actual allowed client              |
+| `inter.broker.listener.name`  | broker internal communication      |
+| `client.properties`           | CLI/client authentication          |
+
+```
+
+## Delete ALL Kafka data completely
+
+- ⚠️ This removes:
+  - topics
+  - consumer groups
+  - offsets
+  - retained messages
+  - metadata
+
+```bash
+sudo rm -rf /var/lib/kafka-logs/*
+rm -rf logs/*
+```
+
+## Create topic for security
+
+```bash
+# List topics
+bin/kafka-topics.sh \
+--list \
+--bootstrap-server 192.168.29.13:9092 \
+--command-config client.properties
+
+# Create
+bin/kafka-topics.sh \
+--create \
+--topic stress-topic \
+--partitions 3 \
+--replication-factor 1 \
+--bootstrap-server 192.168.29.13:9092 \
+--command-config client.properties
+```
+
+## Verify clean state
+
+```bash
+bin/kafka-topics.sh \
+--list \
+--bootstrap-server 192.168.29.13:9092 \
+--command-config client.properties
+```
+
+## Verify groups
+
+```bash
+bin/kafka-consumer-groups.sh \
+--list \
+--bootstrap-server 192.168.29.13:9092 \
+--command-config client.properties
+```
+
+> ⚠️ BUT in SASL_PLAINTEXT:
+
+*password is sent over network during authentication handshake.*
+
+```table
+| Layer    | Security                   |
+| -------- | -------------------------- |
+| Payload  | Safe                       |
+| Network  | NOT encrypted              |
+| Password | Visible to packet sniffing |
+```
+
+- So what does SASL_PLAINTEXT mean?
+  - Authentication = YES
+  - Encryption = NO
+
+- So password is protected from users at app level
+- BUT NOT protected from network sniffing tools like Wireshark.
+
+- What is SASL_SSL?
+  - This is enterprise-level Kafka security.
+  - `Authentication + Encryption`
+
+```table
+| Mode           | Auth | Encryption | Safe in production |
+| -------------- | ---- | ---------- | ------------------ |
+| PLAINTEXT      | ❌    | ❌          | ❌                  |
+| SASL_PLAINTEXT | ✅    | ❌          | ⚠️ (dev only)      |
+| SASL_SSL       | ✅    | ✅          | ✅ production       |
+```
+
+- What changes in SASL_SSL?
+  - Instead of: `listeners=SASL_PLAINTEXT://host:9092`
+  - You use: `listeners=SASL_SSL://host:9093`
+
+- And you add SSL certs:
+  - keystore (server identity)
+  - truststore (client trust)
+  - certificates
+
+- What it gives you
+  - Encrypted traffic (TLS)
+  - Password hidden in network
+  - Secure microservice communication
+  - Production-grade security
+
+- Production stage
+  - You MUST move to: `SASL_SSL + ACLs`

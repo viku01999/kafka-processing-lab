@@ -4,6 +4,12 @@ import time
 
 producer = KafkaProducer(
     bootstrap_servers="192.168.29.13:9092",
+
+    security_protocol="SASL_PLAINTEXT",
+    sasl_mechanism="PLAIN",
+    sasl_plain_username="spade",
+    sasl_plain_password="Vikas@123",
+
     acks="all",
     retries=5,
     linger_ms=50,

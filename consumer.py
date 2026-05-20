@@ -4,6 +4,12 @@ import time
 consumer = KafkaConsumer(
     "stress-topic",
     bootstrap_servers="192.168.29.13:9092",
+
+    security_protocol="SASL_PLAINTEXT",
+    sasl_mechanism="PLAIN",
+    sasl_plain_username="spade",
+    sasl_plain_password="Vikas@123",
+
     group_id="order-service",
 
     auto_offset_reset="earliest",
@@ -26,7 +32,7 @@ for message in consumer:
         )
 
         # simulate processing
-        time.sleep(1)
+#        time.sleep(1)
 
     except Exception as e:
         print("ERROR:", e)
