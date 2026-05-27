@@ -69,7 +69,6 @@ Kafka = event transport
 ```bash
 sudo mkdir -p /var/lib/kafka-logs
 sudo chown -R $USER:$USER /var/lib/kafka-logs
-sudo chown -R kafka:kafka /var/lib/kafka-logs
 ```
 
 # Final Kafka Production-Style Configuration
