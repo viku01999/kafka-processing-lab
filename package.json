@@ -1,0 +1,32 @@
+{
+  "name": "kafka-processing-lab",
+  "version": "1.0.0",
+  "description": "Production-grade Apache Kafka learning repository covering:",
+  "main": "dist/server.js",
+  "scripts": {
+    "producer": "ts-node src/producer.ts",
+    "consumer": "ts-node src/consumer.ts",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viku01999/kafka-processing-lab.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/viku01999/kafka-processing-lab/issues"
+  },
+  "homepage": "https://github.com/viku01999/kafka-processing-lab#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "kafkajs": "^2.2.4",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.9.1"
+  }
+}
