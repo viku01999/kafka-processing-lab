@@ -87,10 +87,10 @@ config/server.properties
 process.roles=broker,controller
 node.id=1
 
-controller.quorum.voters=1@192.168.29.13:9093
+controller.quorum.voters=1@xxx.xxx.xx.xx:9093
 
-listeners=PLAINTEXT://192.168.29.13:9092,CONTROLLER://192.168.29.13:9093
-advertised.listeners=PLAINTEXT://192.168.29.13:9092
+listeners=PLAINTEXT://xxx.xxx.xx.xx:9092,CONTROLLER://xxx.xxx.xx.xx:9093
+advertised.listeners=PLAINTEXT://xxx.xxx.xx.xx:9092
 
 inter.broker.listener.name=PLAINTEXT
 controller.listener.names=CONTROLLER
@@ -158,7 +158,7 @@ bin/kafka-topics.sh \
 --topic stress-topic \
 --partitions 3 \
 --replication-factor 1 \
---bootstrap-server 192.168.29.13:9092
+--bootstrap-server xxx.xxx.xx.xx:9092
 ```
 
 ## Describe topic
@@ -167,7 +167,7 @@ bin/kafka-topics.sh \
 bin/kafka-topics.sh \
 --describe \
 --topic stress-topic \
---bootstrap-server 192.168.29.13:9092
+--bootstrap-server xxx.xxx.xx.xx:9092
 ```
 
 ## Delete topic
@@ -176,7 +176,7 @@ bin/kafka-topics.sh \
 bin/kafka-topics.sh \
 --delete \
 --topic stress-topic \
---bootstrap-server 192.168.29.13:9092
+--bootstrap-server xxx.xxx.xx.xx:9092
 ```
 
 ## Consumer Group Commands
@@ -186,13 +186,13 @@ bin/kafka-topics.sh \
 bin/kafka-consumer-groups.sh \
 --describe \
 --all-groups \
---bootstrap-server 192.168.29.13:9092
+--bootstrap-server xxx.xxx.xx.xx:9092
 
 # Delete group
 bin/kafka-consumer-groups.sh \
 --delete \
 --group stress-group \
---bootstrap-server 192.168.29.13:9092
+--bootstrap-server xxx.xxx.xx.xx:9092
 ```
 
 ## Monitoring Commands
@@ -245,7 +245,7 @@ grep -i "log dir" logs/server.log
 grep -i "shutdown" logs/server.log
 
 # Consumer lag before crash
-bin/kafka-consumer-groups.sh --describe --all-groups --bootstrap-server 192.168.29.13:9092
+bin/kafka-consumer-groups.sh --describe --all-groups --bootstrap-server xxx.xxx.xx.xx:9092
 
 # Retention cleanup
 grep -i "Deleting segment" logs/server.log
@@ -253,7 +253,7 @@ grep -i "Deleting segment" logs/server.log
 # Lag Growth Rate
 watch -n 5 '
 /usr/local/kafka-4.1.0-src/bin/kafka-consumer-groups.sh \
---bootstrap-server 192.168.29.13:9092 \
+--bootstrap-server xxx.xxx.xx.xx:9092 \
 --describe --all-groups
 '
 
@@ -269,7 +269,7 @@ docker run -d \
 --name kafka-ui \
 -p 8080:8080 \
 -e KAFKA_CLUSTERS_0_NAME=local \
--e KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=192.168.29.13:9092 \
+-e KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=xxx.xxx.xx.xx:9092 \
 provectuslabs/kafka-ui
 ```
 
@@ -327,7 +327,7 @@ provectuslabs/kafka-ui
 
 watch -n 5 '
 /usr/local/kafka-4.1.0-src/bin/kafka-consumer-groups.sh \
---bootstrap-server 192.168.29.13:9092 \
+--bootstrap-server xxx.xxx.xx.xx:9092 \
 --describe \
 --all-groups
 '
@@ -337,7 +337,7 @@ watch -n 5 '
 ############################################################
 
 bin/kafka-console-producer.sh \
---bootstrap-server 192.168.29.13:9092 \
+--bootstrap-server xxx.xxx.xx.xx:9092 \
 --topic stress-topic
 
 ############################################################
@@ -345,7 +345,7 @@ bin/kafka-console-producer.sh \
 ############################################################
 
 bin/kafka-console-consumer.sh \
---bootstrap-server 192.168.29.13:9092 \
+--bootstrap-server xxx.xxx.xx.xx:9092 \
 --topic stress-topic \
 --from-beginning
 ```

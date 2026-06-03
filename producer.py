@@ -6,7 +6,7 @@ import time
 producer = KafkaProducer(
 
     # Kafka broker address
-    bootstrap_servers="192.168.29.13:9092",
+    bootstrap_servers="xxx.xxx.xx.xx:9092",
 
     # Wait for all replicas acknowledgment
     # Gives maximum durability
