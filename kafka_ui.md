@@ -82,3 +82,33 @@ akhq:
 ' \
   tchiotludo/akhq:latest
 ```
+
+### You can write separate configuration also
+
+*Create one file `akhq.yml`*
+
+```bash
+micronaut:
+  security:
+    enabled: false
+
+akhq:
+  ui-options:
+    logo: "https://www.suhora.com/assets/images/SuhoraLogowhite.svg"
+
+  connections:
+    my-kafka:
+      properties:
+        bootstrap.servers: "192.168.29.56:9092"
+```
+
+**Need to run via this command:**
+
+```bash
+sudo docker run -d \
+  --name akhq \
+  -p 8080:8080 \
+  -v $(pwd)/akhq.yml:/app/application.yml \
+  -e MICRONAUT_CONFIG_FILES=/app/application.yml \
+  tchiotludo/akhq:latest
+```
